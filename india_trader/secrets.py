@@ -15,6 +15,10 @@ ENV_NAMES = {
 class Keychain:
     """Use Security.framework directly: secrets never enter process arguments."""
 
+    scope: str
+    cf: ctypes.CDLL
+    sec: ctypes.CDLL
+
     def __init__(self, workspace):
         if sys.platform != "darwin":
             raise ValueError(
