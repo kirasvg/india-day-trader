@@ -189,6 +189,8 @@ def refresh(workspace, now=None):
         "at": now.isoformat(),
         "origin": origin,
         "broker": config.get("broker", "zerodha"),
+        "data_provider": config.get("data_provider", config.get("broker", "zerodha")),
+        "account_source": config.get("account_source", "BROKER"),
         "paused": paused,
         "watchlist": watch,
         "candidates": store.plans()[:50],

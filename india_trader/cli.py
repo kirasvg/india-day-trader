@@ -138,7 +138,23 @@ def parser():
     q.add_argument("--source")
     q.add_argument("--published-at")
     q.add_argument("--basis", choices=("standalone", "consolidated"))
+    q = sub.add_parser(
+        "confirm-account",
+        help="Manually attest execution-account cash and all exposure; never broker-verified",
+    )
+    q.add_argument("--cash", required=True)
+    q.add_argument(
+        "--exposed",
+        default="",
+        help="All holdings, positions and pending-order instruments, comma-separated",
+    )
+    q.add_argument("--reviewed", action="store_true", required=True)
     q = sub.add_parser("setup", help="Configure a personal workspace without editing JSON")
+    q.add_argument(
+        "--data-provider",
+        choices=("upstox",),
+        help="Free data-only connection; --broker remains manual execution broker",
+    )
     q.add_argument("--demo", action="store_true")
     q.add_argument("--interactive", action="store_true")
     q.add_argument("--broker", choices=("groww", "zerodha"))
@@ -160,7 +176,7 @@ def parser():
     q = sub.add_parser(
         "auth", help="Connect using hidden prompts and macOS Keychain, or remove stored credentials"
     )
-    q.add_argument("--broker", choices=("groww", "zerodha"), required=True)
+    q.add_argument("--broker", choices=("groww", "zerodha", "upstox"), required=True)
     q.add_argument("--flow", choices=("token", "login"), default="token")
     q.add_argument("--clear", action="store_true")
     q.add_argument("--json", action="store_true")
@@ -376,15 +392,28 @@ def execute(a):
             "items": result,
             "coverage": "UNVERIFIED",
         }
+    if a.command == "confirm-account":
+        if a.now:
+            raise ValueError("Manual account confirmation uses the actual clock")
+        from .manual import confirm_account
+
+        return confirm_account(w, a.cash, a.exposed, now, a.reviewed)
     if a.command in ("setup", "doctor", "status", "auth", "sync", "market"):
         from . import onboarding
 
         if a.command == "setup":
             return (
-                onboarding.interactive_setup(w)
+                onboarding.interactive_setup(w, data_provider=a.data_provider)
                 if a.interactive
                 else onboarding.setup(
-                    w, a.broker, a.watchlist, a.capital, a.max_loss, a.daily_risk, a.demo
+                    w,
+                    a.broker,
+                    a.watchlist,
+                    a.capital,
+                    a.max_loss,
+                    a.daily_risk,
+                    a.demo,
+                    a.data_provider,
                 )
             )
         if a.command in ("doctor", "status"):

@@ -454,7 +454,13 @@ def risk(order, config, account, quotes, calendar, now):
             and snapshot.get("checked_at")
             and 0 <= (now - stamp(snapshot["checked_at"])).total_seconds() <= 120
         )
-        if not fresh or snapshot.get("status") != "AVAILABLE":
+        allowed_snapshot = snapshot.get("status") == "AVAILABLE" or (
+            config.get("account_source") == "MANUAL_ATTESTATION"
+            and config.get("data_provider") == "upstox"
+            and snapshot.get("status") == "MANUAL_ATTESTED"
+            and snapshot.get("source") == "USER_ATTESTATION"
+        )
+        if not fresh or not allowed_snapshot:
             reasons.append("Fresh, complete read-only broker account snapshot required")
         else:
             if instrument in snapshot.get("exposed_instruments", []):
@@ -472,7 +478,8 @@ def risk(order, config, account, quotes, calendar, now):
         "checked_at": now.isoformat(),
         "estimated_risk_inr": str(estimated),
         "net_reward_risk": str(ratio),
-        "warning": "Loss estimate includes configured costs; gaps and circuit locks can cause larger losses.",
+        "account_verification": config.get("broker_snapshot", {}).get("status", "UNVERIFIED"),
+        "warning": "Loss estimate includes configured costs; gaps and circuit locks can cause larger losses. Manual attestations are not broker-verified.",
     }
 
 

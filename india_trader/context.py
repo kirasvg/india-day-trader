@@ -192,7 +192,8 @@ def collect(workspace, public_only=False, client=None, fetch=None, now=None, for
     else:
         try:
             proxies = broker_proxies(
-                client or broker_client(workspace, config.get("broker")),
+                client
+                or broker_client(workspace, config.get("data_provider", config.get("broker"))),
                 clock if now is not None else None,
                 config.get("max_quote_age_seconds", 60),
             )

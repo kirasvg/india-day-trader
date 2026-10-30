@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Free Upstox Analytics Token market-data mode with Groww/Zerodha manual execution, closed five-minute candles and polled quotes.
+- Hidden token auth, separate provider/account health, explicit expiring manual exposure attestations, and optional in-page browser alerts.
+- Source guide and synthetic contract tests; authenticated validation remains pending.
+
 ## 0.3.0 — 2026-10-30
 
 Initial public research preview.

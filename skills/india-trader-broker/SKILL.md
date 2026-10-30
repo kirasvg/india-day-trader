@@ -26,3 +26,6 @@ For the v0.2 daily workflow use `serve` (add `--collect` only for a connected wo
 
 
 For private release gates use `validate broker --broker groww|zerodha`, `reconcile --file REVIEWED.json --source-file ORIGINAL.pdf`, `context refresh`, `observe run --sessions 20`, and `validate readiness`. See [gate workflow](../../docs/finishing-the-gates.md). Synthetic notes/mocks are examples only. Do not change evidence origin, review flags or effective dates to force a pass. Actual observation commands reject clock overrides and need real elapsed sessions.
+
+
+For a free data connection with manual Groww execution, use `setup --broker groww --data-provider upstox` in a new private workspace, then hidden local `auth --broker upstox --flow token`, `sync` and `serve --collect`. Read [Upstox free-data setup](../../docs/upstox-free-data.md). `broker` remains the execution provider for fees/eligibility/cutoffs; `data_provider` supplies quotes/candles. Never call the Upstox account or order APIs in this mode. User-confirmed exposure is `MANUAL_ATTESTED`, expires after 120 seconds for entry checks, and is not authenticated evidence. Keep actual Groww fills separate from paper positions. Browser notifications require an open page, running collector and user-granted permission; they are not guaranteed real-time exits. Missing rules or stale data continue to block plans.

@@ -138,7 +138,7 @@ def run(workspace, target=20, interval=30, once=False, stop=None):
     if config.get("data_mode") != "CONNECTED":
         raise ValueError("Only a connected workspace can run an actual observation campaign")
     # Preflight credentials without printing them; no repeated unauthenticated network traffic.
-    broker_client(workspace, config["broker"]).headers()
+    broker_client(workspace, config.get("data_provider", config["broker"])).headers()
     store = Store(workspace)
     stop = stop or threading.Event()
     bootstrapped_day = None

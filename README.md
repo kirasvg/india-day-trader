@@ -102,6 +102,19 @@ The installer bundles the engine, templates and reference docs into each indepen
 
 For CLI-only installation, `python3 -m pip install .` provides `india-trader`. From a checkout, `python3 -m india_trader` or `python3 scripts/trader.py` works without installation.
 
+## Free data with manual Groww execution
+
+Use Upstox's free read-only Analytics Token for NSE cash-equity quotes and completed five-minute candles while keeping Groww as your manual execution broker. The local collector polls REST data; it is not a tick-streaming service. Account exposure is explicitly user-attested, never presented as broker-verified. No paid Groww API subscription is needed for this mode. See the [setup and limitations](docs/upstox-free-data.md).
+
+```sh
+python3 -m india_trader --workspace "$HOME/india-trader-upstox" setup --broker groww --data-provider upstox --watchlist NSE:INFY --capital 100000 --max-loss 500 --daily-risk 1500
+python3 -m india_trader --workspace "$HOME/india-trader-upstox" auth --broker upstox --flow token
+python3 -m india_trader --workspace "$HOME/india-trader-upstox" sync
+python3 -m india_trader --workspace "$HOME/india-trader-upstox" serve --collect
+```
+
+Choose your own limits; the numbers above are examples. Review health and confirm execution-account exposure in Settings before tracking a paper plan. API tokens go only in the hidden local prompt. A real Upstox account and authenticated feed validation are still required.
+
 ## Connect your personal workspace
 
 ```bash

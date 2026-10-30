@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 ENV_NAMES = {
+    "upstox": {"access_token": "UPSTOX_ANALYTICS_TOKEN"},
     "zerodha": {"api_key": "KITE_API_KEY", "access_token": "KITE_ACCESS_TOKEN"},
     "groww": {"access_token": "GROWW_ACCESS_TOKEN"},
 }
