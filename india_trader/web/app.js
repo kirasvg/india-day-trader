@@ -19,7 +19,7 @@ async function update(){if(loading)return;loading=true;try{[state,health,review,
 function notifyChanges(){
   if(state.origin==='SYNTHETIC')return;
   const entries=state.paused?[]:(state.candidates||[]).filter(c=>c.context?.risk?.status==='PASS'&&['PLANNED','SAVED'].includes(c.state)).map(c=>({id:'entry:'+c.plan.instrument+':'+c.plan.entry_time+':'+c.plan.entry,title:'Entry conditions met · review before trading',body:c.plan.instrument+' · entry '+money(c.plan.entry)+' · stop '+money(c.plan.stop)+' · paper research only'}));
-  const exits=(state.alerts||[]).map(a=>({id:'exit:'+a.instrument+':'+JSON.stringify(a.event),title:'Tracked paper position · attention needed',body:a.instrument+' · '+clean(typeof a.event==='string'?a.event:JSON.stringify(a.event))+' · check current broker price'}));
+  const exits=(state.alerts||[]).map(a=>({id:'exit:'+a.instrument+':'+(a.plan_entry_time||'unknown')+':'+JSON.stringify(a.event),title:'Tracked paper position · attention needed',body:a.instrument+' · '+clean(typeof a.event==='string'?a.event:JSON.stringify(a.event))+' · check current broker price'}));
   for(const item of [...entries,...exits]){if(seenAlerts.has(item.id))continue;seenAlerts.add(item.id);if(alertsEnabled&&'Notification' in window&&Notification.permission==='granted'){try{new Notification(item.title,{body:item.body,tag:item.id});}catch{toast(item.title+' — '+item.body);}}}
 }
 function metrics(items){return `<div class="metrics">${items.map(([label,value,note])=>`<div class="metric"><div class="metric-label">${esc(label)}</div><div class="metric-value">${esc(value)}</div><small>${esc(note)}</small></div>`).join('')}</div>`;}

@@ -23,4 +23,6 @@ vm.runInContext('state.alerts=[{instrument:"NSE:INFY",event:"DATA_STALE"}];state
 assert.equal(sent.length,2,'Synthetic fixtures must not emit trading notifications');
 vm.runInContext('state.origin="BROKER_RESEARCH";alertsEnabled=false;notifyChanges();alertsEnabled=true;notifyChanges();',ctx);
 assert.equal(sent.length,2,'Enabling alerts must not replay old conditions');
+vm.runInContext('state.alerts=[{instrument:"NSE:INFY",event:"STOP",plan_entry_time:"next-session-entry"}];notifyChanges();',ctx);
+assert.equal(sent.length,3,'A later position in the same symbol must get its own stop notification');
 console.log('Browser alert behavior passed: gating, deduplication, stop, pause, synthetic and backlog handling.');

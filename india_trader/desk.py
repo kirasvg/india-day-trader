@@ -181,7 +181,13 @@ def refresh(workspace, now=None):
                 origin,
                 identity=identity,
             )
-            active_alerts.append({"instrument": instrument, "event": event})
+            active_alerts.append(
+                {
+                    "instrument": instrument,
+                    "event": event,
+                    "plan_entry_time": position["plan"]["entry_time"],
+                }
+            )
     from .context import snapshot as context_snapshot
 
     result = {
