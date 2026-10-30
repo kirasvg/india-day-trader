@@ -1,0 +1,16 @@
+[
+  {
+    "title": "SYNTHETIC: Reliance Industries quarterly financial results",
+    "summary": "Invented demonstration announcement.",
+    "url": "https://example.com/synthetic-results",
+    "source": "SYNTHETIC",
+    "published_at": "2026-10-19T09:00:00+05:30"
+  },
+  {
+    "title": "SYNTHETIC: Reliance Industries insider trading disclosure",
+    "summary": "Invented promoter acquisition disclosure. No actual transaction.",
+    "url": "https://example.com/synthetic-disclosure",
+    "source": "SYNTHETIC",
+    "published_at": "2026-10-19T09:05:00+05:30"
+  }
+]

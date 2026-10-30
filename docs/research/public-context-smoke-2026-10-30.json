@@ -1,0 +1,130 @@
+{
+  "at": "2026-10-30T10:31:51.724676+05:30",
+  "origin": "PUBLIC_SOURCE",
+  "status": "PARTIAL",
+  "sources": [
+    {
+      "id": "announcements",
+      "category": "announcements",
+      "url": "https://nsearchives.nseindia.com/content/RSS/Online_announcements.xml",
+      "directory": "https://www.nseindia.com/static/rss-feed",
+      "checked_at": "2026-10-30T10:31:51.724676+05:30",
+      "status": "AVAILABLE",
+      "input_items": 338,
+      "matched_items": 29,
+      "undated_items": 0,
+      "invalid_items": 302,
+      "latest_publication": "2026-10-30T10:27:24+05:30",
+      "coverage": "SOURCE_SPECIFIC_NOT_COMPLETE"
+    },
+    {
+      "id": "financial-results",
+      "category": "results",
+      "url": "https://nsearchives.nseindia.com/content/RSS/Financial_Results.xml",
+      "directory": "https://www.nseindia.com/static/rss-feed",
+      "checked_at": "2026-10-30T10:31:51.724676+05:30",
+      "status": "STALE",
+      "input_items": 4,
+      "matched_items": 0,
+      "undated_items": 0,
+      "invalid_items": 0,
+      "latest_publication": "2026-08-24T17:39:16+05:30",
+      "coverage": "SOURCE_SPECIFIC_NOT_COMPLETE"
+    },
+    {
+      "id": "integrated-financials",
+      "category": "results",
+      "url": "https://nsearchives.nseindia.com/content/RSS/Integrated_Filing_Financials.xml",
+      "directory": "https://www.nseindia.com/static/rss-feed",
+      "checked_at": "2026-10-30T10:31:51.724676+05:30",
+      "status": "AVAILABLE",
+      "input_items": 20,
+      "matched_items": 20,
+      "undated_items": 0,
+      "invalid_items": 0,
+      "latest_publication": "2026-10-29T23:47:45+05:30",
+      "coverage": "SOURCE_SPECIFIC_NOT_COMPLETE"
+    },
+    {
+      "id": "corporate-actions",
+      "category": "corporate-action",
+      "url": "https://nsearchives.nseindia.com/content/RSS/Corporate_action.xml",
+      "directory": "https://www.nseindia.com/static/rss-feed",
+      "checked_at": "2026-10-30T10:31:51.724676+05:30",
+      "status": "AVAILABLE",
+      "input_items": 15,
+      "matched_items": 15,
+      "undated_items": 0,
+      "invalid_items": 0,
+      "latest_publication": "2026-10-30T10:10:18+05:30",
+      "coverage": "SOURCE_SPECIFIC_NOT_COMPLETE"
+    },
+    {
+      "id": "board-meetings",
+      "category": "board-meeting",
+      "url": "https://nsearchives.nseindia.com/content/RSS/Board_Meetings.xml",
+      "directory": "https://www.nseindia.com/static/rss-feed",
+      "checked_at": "2026-10-30T10:31:51.724676+05:30",
+      "status": "AVAILABLE",
+      "input_items": 7,
+      "matched_items": 7,
+      "undated_items": 0,
+      "invalid_items": 0,
+      "latest_publication": "2026-10-30T10:25:25+05:30",
+      "coverage": "SOURCE_SPECIFIC_NOT_COMPLETE"
+    },
+    {
+      "id": "insider-trading",
+      "category": "insider-disclosure",
+      "url": "https://nsearchives.nseindia.com/content/RSS/InsiderTrading.xml",
+      "directory": "https://www.nseindia.com/static/rss-feed",
+      "checked_at": "2026-10-30T10:31:51.724676+05:30",
+      "status": "AVAILABLE",
+      "input_items": 1,
+      "matched_items": 1,
+      "undated_items": 0,
+      "invalid_items": 0,
+      "latest_publication": "2026-10-30T10:27:09+05:30",
+      "coverage": "SOURCE_SPECIFIC_NOT_COMPLETE"
+    },
+    {
+      "id": "pledges",
+      "category": "pledge",
+      "url": "https://nsearchives.nseindia.com/content/RSS/Sast_ReasonForEncumbrance.xml",
+      "directory": "https://www.nseindia.com/static/rss-feed",
+      "checked_at": "2026-10-30T10:31:51.724676+05:30",
+      "status": "UNVERIFIED",
+      "input_items": 20,
+      "matched_items": 0,
+      "undated_items": 20,
+      "invalid_items": 0,
+      "latest_publication": null,
+      "coverage": "SOURCE_SPECIFIC_NOT_COMPLETE"
+    }
+  ],
+  "proxies": [
+    {
+      "instrument": "NSE:NIFTYBEES",
+      "label": "Broad market ETF proxy",
+      "role": "MARKET",
+      "status": "NOT_REQUESTED",
+      "kind": "ETF_PROXY_NOT_INDEX"
+    },
+    {
+      "instrument": "NSE:BANKBEES",
+      "label": "Banking ETF proxy",
+      "role": "SECTOR",
+      "status": "NOT_REQUESTED",
+      "kind": "ETF_PROXY_NOT_INDEX"
+    },
+    {
+      "instrument": "NSE:ITBEES",
+      "label": "Information technology ETF proxy",
+      "role": "SECTOR",
+      "status": "NOT_REQUESTED",
+      "kind": "ETF_PROXY_NOT_INDEX"
+    }
+  ],
+  "watchlist": [],
+  "note": "ETF prices are context proxies, not index levels, breadth, a sector classification of every stock or trading signals. Feed reachability/zero items never establish complete news coverage. Sources poll at most every five minutes unless forced; provider timestamps remain distinct from receipt."
+}

@@ -1,0 +1,27 @@
+{
+  "capital_inr": "100000",
+  "max_loss_per_trade_inr": "500",
+  "max_daily_risk_inr": "1500",
+  "max_trades_per_day": 3,
+  "max_position_fraction": "0.25",
+  "cash_buffer_fraction": "0.10",
+  "min_reward_risk": "1",
+  "max_quote_age_seconds": 60,
+  "max_plan_age_seconds": 600,
+  "roundtrip_cost_bps": "15",
+  "fixed_roundtrip_cost_inr": "40",
+  "slippage_bps": "5",
+  "blocked": [],
+  "watchlist_aliases": {
+    "NSE:RELIANCE": [
+      "RELIANCE",
+      "Reliance Industries"
+    ],
+    "NSE:INFY": [
+      "INFY",
+      "Infosys"
+    ]
+  },
+  "cost_note": "Illustrative conservative estimates only. Configure from broker contract notes; not official statutory rates.",
+  "data_label": "SYNTHETIC DEMO: invented prices, statements, sessions and disclosures; not market evidence"
+}

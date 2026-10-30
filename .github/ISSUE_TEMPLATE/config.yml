@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Private security report
+    url: https://github.com/kirasvg/india-day-trader/security/advisories/new
+    about: Do not disclose credentials or vulnerabilities in public issues.

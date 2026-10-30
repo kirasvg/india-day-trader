@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "profiles": [
+    {
+      "id": "zerodha-nse-intraday-2026-10-30",
+      "broker": "zerodha",
+      "exchange": "NSE",
+      "product": "INTRADAY",
+      "valid_from": "2026-10-30",
+      "valid_to": "2026-12-31",
+      "reviewed_on": "2026-10-30",
+      "status": "PUBLISHED_ESTIMATE",
+      "source": "https://zerodha.com/charges/",
+      "brokerage_rate": "0.0003",
+      "brokerage_cap_inr": "20",
+      "brokerage_min_inr": "0",
+      "exchange_rate": "0.0000307",
+      "ipft_rate": "0",
+      "sebi_rate": "0.000001",
+      "stt_sell_rate": "0.00025",
+      "stamp_buy_rate": "0.00003",
+      "gst_rate": "0.18",
+      "gst_components": [
+        "brokerage",
+        "exchange",
+        "sebi",
+        "ipft"
+      ],
+      "note": "Published retail standard-funding schedule, not a reconciled contract-note calculator. Zerodha displayed exchange rate is retained as one combined line to avoid double-counting IPFT. Groww UPI mandate/NRI and other special plans unsupported. BSE group-dependent rates require a separate profile."
+    },
+    {
+      "id": "groww-nse-intraday-2026-10-30",
+      "broker": "groww",
+      "exchange": "NSE",
+      "product": "INTRADAY",
+      "valid_from": "2026-10-30",
+      "valid_to": "2026-12-31",
+      "reviewed_on": "2026-10-30",
+      "status": "PUBLISHED_ESTIMATE",
+      "source": "https://groww.in/pricing",
+      "brokerage_rate": "0.001",
+      "brokerage_cap_inr": "20",
+      "brokerage_min_inr": "5",
+      "exchange_rate": "0.0000297",
+      "ipft_rate": "0.000001",
+      "sebi_rate": "0.000001",
+      "stt_sell_rate": "0.00025",
+      "stamp_buy_rate": "0.00003",
+      "gst_rate": "0.18",
+      "gst_components": [
+        "brokerage",
+        "exchange",
+        "sebi",
+        "ipft"
+      ],
+      "note": "Published retail standard-funding schedule, not a reconciled contract-note calculator. Zerodha displayed exchange rate is retained as one combined line to avoid double-counting IPFT. Groww UPI mandate/NRI and other special plans unsupported. BSE group-dependent rates require a separate profile."
+    }
+  ]
+}

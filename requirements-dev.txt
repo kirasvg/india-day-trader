@@ -1,0 +1,8 @@
+# Development/release tools only; the installed application has no runtime dependencies.
+# Use Python 3.12+ for this tool environment; runtime compatibility starts at 3.9.
+build==1.6.1
+pdoc==16.0.0
+ruff==0.17.3
+ty==0.0.95
+zizmor==1.31.1
+actionlint-py==1.7.12.25

@@ -1,0 +1,10 @@
+include LICENSE NOTICE.md README.md CHANGELOG.md CONTRIBUTING.md SECURITY.md CODE_OF_CONDUCT.md AGENTS.md PLAN.md ROADMAP.md
+include requirements-dev.txt .editorconfig .env.example
+recursive-include scripts *.py
+recursive-include skills *.py *.md
+recursive-include docs *.md *.json *.jpg
+recursive-include examples *.json *.txt
+recursive-include tests *.py
+prune site
+prune trader
+prune build

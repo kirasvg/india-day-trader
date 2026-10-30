@@ -1,0 +1,50 @@
+{
+  "origin": "SYNTHETIC",
+  "status": "SYNTHETIC",
+  "at": "2026-10-19T09:35:00+05:30",
+  "max_proxy_age_seconds": 60,
+  "sources": [
+    {
+      "id": "synthetic-results",
+      "category": "results",
+      "url": "https://example.com/synthetic-results",
+      "status": "SYNTHETIC",
+      "checked_at": "2026-10-19T09:35:00+05:30",
+      "input_items": 1,
+      "matched_items": 1
+    }
+  ],
+  "proxies": [
+    {
+      "instrument": "NSE:NIFTYBEES",
+      "label": "Broad market ETF proxy \u00b7 synthetic",
+      "role": "MARKET",
+      "kind": "ETF_PROXY_NOT_INDEX",
+      "status": "SYNTHETIC",
+      "price_inr": "100",
+      "change_pct": "0.50",
+      "timestamp": "2026-10-19T09:35:00+05:30"
+    },
+    {
+      "instrument": "NSE:BANKBEES",
+      "label": "Banking ETF proxy \u00b7 synthetic",
+      "role": "SECTOR",
+      "kind": "ETF_PROXY_NOT_INDEX",
+      "status": "SYNTHETIC",
+      "price_inr": "200",
+      "change_pct": "-0.20",
+      "timestamp": "2026-10-19T09:35:00+05:30"
+    },
+    {
+      "instrument": "NSE:ITBEES",
+      "label": "IT ETF proxy \u00b7 synthetic",
+      "role": "SECTOR",
+      "kind": "ETF_PROXY_NOT_INDEX",
+      "status": "SYNTHETIC",
+      "price_inr": "50",
+      "change_pct": "0.80",
+      "timestamp": "2026-10-19T09:35:00+05:30"
+    }
+  ],
+  "note": "All proxy prices, changes and source counts are INVENTED; no source/provider was contacted. Never count this as observed market context."
+}

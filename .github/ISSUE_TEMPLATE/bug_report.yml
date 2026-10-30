@@ -1,0 +1,25 @@
+name: Bug report
+description: Reproduce a software problem using synthetic data.
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: Do not include credentials, account identifiers or private financial documents. Report security vulnerabilities privately using SECURITY.md.
+  - type: input
+    id: version
+    attributes:
+      label: Version and Python/OS
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction with synthetic inputs
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true

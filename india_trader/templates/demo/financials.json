@@ -1,0 +1,41 @@
+[
+  {
+    "instrument": "NSE:RELIANCE",
+    "period_end": "2025-09-30",
+    "period_months": 3,
+    "basis": "consolidated",
+    "unit": "INR crore",
+    "revenue": "1000",
+    "net_profit": "100",
+    "eps": "10",
+    "published_at": "2025-10-19T18:00:00+05:30",
+    "source_url": "https://example.com/synthetic-financials",
+    "source_note": "SYNTHETIC amounts; EPS in INR per share"
+  },
+  {
+    "instrument": "NSE:RELIANCE",
+    "period_end": "2026-06-30",
+    "period_months": 3,
+    "basis": "consolidated",
+    "unit": "INR crore",
+    "revenue": "1100",
+    "net_profit": "110",
+    "eps": "11",
+    "published_at": "2026-07-19T18:00:00+05:30",
+    "source_url": "https://example.com/synthetic-financials",
+    "source_note": "SYNTHETIC amounts; EPS in INR per share"
+  },
+  {
+    "instrument": "NSE:RELIANCE",
+    "period_end": "2026-09-30",
+    "period_months": 3,
+    "basis": "consolidated",
+    "unit": "INR crore",
+    "revenue": "1200",
+    "net_profit": "125",
+    "eps": "12.5",
+    "published_at": "2026-10-18T18:00:00+05:30",
+    "source_url": "https://example.com/synthetic-financials",
+    "source_note": "SYNTHETIC amounts; EPS in INR per share"
+  }
+]

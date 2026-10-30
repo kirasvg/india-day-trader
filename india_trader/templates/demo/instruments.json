@@ -1,0 +1,10 @@
+{
+  "NSE:RELIANCE": {
+    "asset": "EQUITY",
+    "lot_size": 1,
+    "tick_size": "0.05",
+    "instrument_token": "738561",
+    "groww_symbol": "NSE-RELIANCE",
+    "source": "SYNTHETIC FIXTURE; refresh master before real data use"
+  }
+}

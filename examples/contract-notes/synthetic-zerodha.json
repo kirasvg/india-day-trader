@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "origin": "SYNTHETIC",
+  "broker": "zerodha",
+  "date": "2026-10-30",
+  "exchange": "NSE",
+  "scope": "COMPLETE_NSE_INTRADAY_ONLY",
+  "scope_reviewed": true,
+  "source_reviewed": false,
+  "description": "INVENTED software fixture generated from fee estimates; not an actual broker note or a fee reconciliation observation.",
+  "executions": [
+    {
+      "trade_id": "SYN-TRADE-1",
+      "order_id": "SYN-BUY",
+      "instrument": "NSE:INFY",
+      "side": "BUY",
+      "product": "INTRADAY",
+      "quantity": 40,
+      "price": "1000",
+      "timestamp": "2026-10-30T09:30:00+05:30"
+    },
+    {
+      "trade_id": "SYN-TRADE-2",
+      "order_id": "SYN-BUY",
+      "instrument": "NSE:INFY",
+      "side": "BUY",
+      "product": "INTRADAY",
+      "quantity": 60,
+      "price": "1000",
+      "timestamp": "2026-10-30T09:31:00+05:30"
+    },
+    {
+      "trade_id": "SYN-TRADE-3",
+      "order_id": "SYN-SELL",
+      "instrument": "NSE:INFY",
+      "side": "SELL",
+      "product": "INTRADAY",
+      "quantity": 100,
+      "price": "1001",
+      "timestamp": "2026-10-30T09:45:00+05:30"
+    }
+  ],
+  "charges_inr": {
+    "brokerage": "40.00",
+    "exchange": "6.14",
+    "ipft": "0.00",
+    "sebi": "0.20",
+    "stt": "25.03",
+    "stamp": "3.00",
+    "gst": "8.34"
+  },
+  "total_charges_inr": "82.71",
+  "unmodeled_charges_inr": "0"
+}
