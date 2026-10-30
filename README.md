@@ -181,7 +181,7 @@ A paper fill re-runs risk and conservatively records the limit price. When an as
 - Broker adapters have offline contract tests against documented formats. Authenticated live broker calls have not been tested with a user account. No real orders are submitted by the project.
 - The current NSE announcement URL was reachable but returned zero items during a public-feed smoke check on 2026-10-30. This establishes reachability only, not complete announcement coverage.
 
-See [implementation plan](PLAN.md), [data contracts](docs/schemas.md), [research methodology](docs/methodology.md), [sources](docs/sources.md) and [validation report](docs/validation.md). GitHub Actions runs offline tests and the demo on Python 3.9, 3.11 and 3.13 when pushed; configured CI is distinct from tests already run locally.
+See [implementation plan](PLAN.md), [data contracts](docs/schemas.md), [research methodology](docs/methodology.md), [sources](docs/sources.md) and [validation report](docs/validation.md). GitHub Actions runs the suite and both demos on Linux Python 3.9–3.14 plus Python 3.12 on macOS/Windows. Read the [actual CI results](https://github.com/kirasvg/india-day-trader/actions); configured checks and local results remain distinct.
 
 
 ## Contributing and security

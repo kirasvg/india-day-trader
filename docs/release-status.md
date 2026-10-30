@@ -26,6 +26,6 @@ Installed skills remain independent bundled copies for portability; the roadmap'
 - Observe at least 20 qualified connected market sessions, with session coverage, near-open-to-close span and heartbeat continuity. Record provider failures and machine sleep. The local scorecard is operational evidence, not a tamper-proof audit.
 - Review sourced context coverage and real planned-versus-actual outcomes separately; do not call an empty feed complete or an ORB replay a proven edge.
 
-The local repository is ready for code review and publication under a chosen GitHub account. No remote repository has been published by this build.
+The public research-preview source is maintained at [kirasvg/india-day-trader](https://github.com/kirasvg/india-day-trader). Repository publication does not close the broker, note, context-completeness or observed-session gates.
 
 The [gate completion guide](finishing-the-gates.md) documents placeholder paths, the no-network synthetic tour, current public-source observations and exact commands to supply real evidence later. No assumed inputs are counted as authenticated or observed evidence.
