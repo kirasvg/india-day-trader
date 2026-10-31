@@ -9,7 +9,7 @@ from .core import IST, fingerprint, read, stamp, write
 from .store import Store
 
 
-def validate_broker(workspace, broker=None, client=None, now=None):
+def validate_broker(workspace, broker=None, client=None, now=None, data_client=None):
     """Only internally constructed adapters count as live evidence; injected clients are tests."""
     workspace = Path(workspace)
     config = read(workspace / "config.json")
@@ -19,8 +19,18 @@ def validate_broker(workspace, broker=None, client=None, now=None):
         )
     broker = broker or config["broker"]
     clock = now or datetime.now(IST)
-    origin = "TEST_DOUBLE" if client is not None or now is not None else "BROKER_LIVE_READ_ONLY"
+    origin = (
+        "TEST_DOUBLE"
+        if client is not None or data_client is not None or now is not None
+        else "BROKER_LIVE_READ_ONLY"
+    )
+    separate = (
+        broker == config["broker"]
+        and config.get("data_provider") == "upstox"
+        and config.get("account_source") == "BROKER"
+    )
     client = client or broker_client(workspace, broker)
+    feed = (data_client or broker_client(workspace, "upstox")) if separate else client
     checks = []
 
     def probe(name, operation):
@@ -47,7 +57,7 @@ def validate_broker(workspace, broker=None, client=None, now=None):
             return None
 
     profile = probe("profile", client.profile)
-    master = probe("instrument_master", client.master) if profile is not None else None
+    master = probe("instrument_master", feed.master) if profile is not None or separate else None
     if master is None and profile is None:
         checks.append(
             {
@@ -57,7 +67,7 @@ def validate_broker(workspace, broker=None, client=None, now=None):
             }
         )
     selected = config["watchlist"][:2]
-    quotes = probe("quote_batch", lambda: client.quotes(selected))
+    quotes = probe("quote_batch", lambda: feed.quotes(selected))
     if quotes is not None:
         for name in selected:
             row = quotes.get(name, {})
@@ -96,7 +106,7 @@ def validate_broker(workspace, broker=None, client=None, now=None):
             start = (clock - timedelta(days=7)).replace(hour=9, minute=15, second=0, microsecond=0)
             rows = probe(
                 "history",
-                lambda: client.candles(
+                lambda: feed.candles(
                     *name.split(":"),
                     start.isoformat(),
                     clock.isoformat(),
@@ -118,6 +128,7 @@ def validate_broker(workspace, broker=None, client=None, now=None):
     result = {
         "schema_version": 1,
         "broker": broker,
+        "data_provider": "upstox" if separate else broker,
         "origin": origin,
         "checked_at": clock.isoformat(),
         "status": "PASSED_READ_ONLY_PROBES" if success else "NEEDS_ATTENTION",

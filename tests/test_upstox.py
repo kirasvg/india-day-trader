@@ -389,7 +389,9 @@ class UpstoxTests(unittest.TestCase):
                 thread.join(timeout=5)
 
     def test_interactive_setup_selects_free_data_without_credentials(self):
-        answers = iter(["connected", "groww", "upstox", "NSE:INFY", "100000", "500", "1500"])
+        answers = iter(
+            ["connected", "groww", "upstox", "manual", "NSE:INFY", "100000", "500", "1500"]
+        )
         with tempfile.TemporaryDirectory() as directory:
             w = Path(directory)
             onboarding.interactive_setup(w, ask=lambda _: next(answers))

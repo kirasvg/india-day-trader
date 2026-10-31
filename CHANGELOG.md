@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Optional separate authenticated Groww/Zerodha account connection alongside Upstox market data, role-aware health/validation and ISIN exposure matching; failures invalidate account snapshots without a manual fallback.
+
 - Free Upstox Analytics Token market-data mode with Groww/Zerodha manual execution, closed five-minute candles and polled quotes.
 - Hidden token auth, separate provider/account health, explicit expiring manual exposure attestations, and optional in-page browser alerts.
 - Source guide and synthetic contract tests; authenticated validation remains pending.

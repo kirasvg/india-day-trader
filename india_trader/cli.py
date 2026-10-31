@@ -155,6 +155,11 @@ def parser():
         choices=("upstox",),
         help="Free data-only connection; --broker remains manual execution broker",
     )
+    q.add_argument(
+        "--account-source",
+        choices=("broker", "manual"),
+        help="Read execution-broker exposure or explicitly attest it manually",
+    )
     q.add_argument("--demo", action="store_true")
     q.add_argument("--interactive", action="store_true")
     q.add_argument("--broker", choices=("groww", "zerodha"))
@@ -403,7 +408,9 @@ def execute(a):
 
         if a.command == "setup":
             return (
-                onboarding.interactive_setup(w, data_provider=a.data_provider)
+                onboarding.interactive_setup(
+                    w, data_provider=a.data_provider, account_source=a.account_source
+                )
                 if a.interactive
                 else onboarding.setup(
                     w,
@@ -414,6 +421,7 @@ def execute(a):
                     a.daily_risk,
                     a.demo,
                     a.data_provider,
+                    a.account_source,
                 )
             )
         if a.command in ("doctor", "status"):

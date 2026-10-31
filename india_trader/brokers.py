@@ -94,6 +94,8 @@ class Broker:
                     self._last_request = pacer["last"]
                 with build_opener(NoRedirect).open(request, timeout=25) as response:
                     body = json.load(response)
+                if not isinstance(body, dict):
+                    raise BrokerError("ERROR", "Unexpected broker response shape")
                 expected = "SUCCESS" if self.name == "groww" else "success"
                 if body.get("status") != expected:
                     raise BrokerError(
@@ -132,6 +134,8 @@ class Broker:
 
     def profile(self):
         data = self.transport("/user/profile" if self.name == "zerodha" else "/v1/user/detail")
+        if not isinstance(data, dict):
+            raise BrokerError("ERROR", "Unexpected broker profile response shape")
         # Return capabilities, not the customer's name, email or account identifiers.
         return {
             "status": "AVAILABLE",
@@ -202,10 +206,15 @@ class Broker:
                     "ERROR", "Order pagination incomplete; account exposure remains unverified"
                 )
             cash = max(number(0), number(self.transport("/v1/margins/detail/user")["clear_cash"]))
-        if not all(isinstance(v, list) for v in (holdings, positions, orders)):
+        if not all(isinstance(v, list) for v in (holdings, positions, orders)) or any(
+            not isinstance(r, dict) for group in (holdings, positions, orders) for r in group
+        ):
             raise BrokerError(
                 "ERROR", "Unexpected portfolio response shape; refusing an empty-account assumption"
             )
+
+        if any("quantity" not in row for row in holdings + positions):
+            raise BrokerError("ERROR", "Incomplete quantity in account exposure response")
 
         def symbol(row):
             return row.get("tradingsymbol", row.get("trading_symbol"))
@@ -222,7 +231,22 @@ class Broker:
         occupied.update(symbol(r) for r in active_orders)
         if None in occupied:
             raise BrokerError("ERROR", "Unidentified account exposure; inspect broker records")
-        exposed = sorted(k for k in instruments if k.split(":")[1] in occupied)
+        occupied_isins = {
+            r.get("isin") or r.get("symbol_isin")
+            for r in holdings + positions
+            if number(r.get("quantity", 0)) != 0 or number(r.get("t1_quantity", 0)) != 0
+        } - {None}
+        from .market import instrument_on
+
+        exposed = []
+        for instrument in instruments:
+            try:
+                metadata = instrument_on(instruments, instrument, now.date())
+            except ValueError:
+                metadata = {}
+            if instrument.split(":")[1] in occupied or metadata.get("isin") in occupied_isins:
+                exposed.append(instrument)
+        exposed.sort()
         clean_positions = [
             {
                 "instrument": (r.get("exchange", "UNMAPPED") + ":" + symbol(r)),

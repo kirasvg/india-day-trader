@@ -214,6 +214,7 @@ class Handler(BaseHTTPRequestHandler):
                         w,
                         broker=payload.get("broker"),
                         data_provider=payload.get("data_provider") or None,
+                        account_source=payload.get("account_source") or None,
                         instruments=payload.get("watchlist"),
                         capital=payload.get("capital"),
                         max_loss=payload.get("max_loss"),

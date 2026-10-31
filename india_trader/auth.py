@@ -78,9 +78,7 @@ def connect(workspace, broker, flow="token", clear=False, prompt=getpass.getpass
     if clear:
         for name in ENV_NAMES[broker]:
             store.delete(broker, name)
-        if settings.get("broker") == broker:
-            settings.pop("credential_store", None)
-            write(settings_path, settings)
+        # Keep Keychain discovery enabled for other connected providers.
         return {
             "status": "CLEARED",
             "broker": broker,

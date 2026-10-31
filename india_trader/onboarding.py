@@ -42,7 +42,14 @@ def setup(
     daily_risk=None,
     demo=False,
     data_provider=None,
+    account_source=None,
 ):
+    if account_source not in (None, "broker", "manual"):
+        raise ValueError("Account source must be broker or manual")
+    if account_source == "manual" and data_provider != "upstox":
+        raise ValueError("Manual account mode requires the separate Upstox data provider")
+    if demo and account_source is not None:
+        raise ValueError("Demo setup cannot select a real account connection")
     if data_provider not in (None, "upstox"):
         raise ValueError("Separate data provider currently supports Upstox only")
     if data_provider and (demo or broker not in ("groww", "zerodha")):
@@ -106,7 +113,7 @@ def setup(
         config.update(
             data_provider=data_provider,
             execution_mode="MANUAL",
-            account_source="MANUAL_ATTESTATION",
+            account_source="BROKER" if account_source == "broker" else "MANUAL_ATTESTATION",
         )
     write(workspace / "config.json", config)
     (workspace / ".gitignore").write_text("*\n!.gitignore\n", encoding="utf-8")
@@ -116,6 +123,7 @@ def setup(
             "schema_version": 1,
             "broker": config["broker"],
             "data_provider": config.get("data_provider", config["broker"]),
+            "account_source": config.get("account_source", "BROKER"),
             "mode": config["data_mode"],
             "watchlist": config["watchlist"],
             "credentials": "environment unless auth explicitly enables Keychain",
@@ -137,20 +145,29 @@ def setup(
     }
 
 
-def interactive_setup(workspace, ask=input, data_provider=None):
+def interactive_setup(workspace, ask=input, data_provider=None, account_source=None):
     print("India Trader setup — local research and paper trading")
     mode = ask("Mode [demo/connected]: ").strip().lower()
     if mode == "demo":
-        return setup(workspace, demo=True, data_provider=data_provider)
+        return setup(
+            workspace, demo=True, data_provider=data_provider, account_source=account_source
+        )
     if mode != "connected":
         raise ValueError("Choose demo or connected")
     broker = ask("Execution broker [groww/zerodha]: ").strip().lower()
     provider = data_provider or ask("Market data [broker/upstox; blank=broker]: ").strip().lower()
     if provider not in ("", "broker", "upstox"):
         raise ValueError("Choose broker or upstox for market data")
+    source = account_source
+    if provider == "upstox" and source is None:
+        source = (
+            ask("Execution-account exposure [broker/manual; blank=manual]: ").strip().lower()
+            or "manual"
+        )
     return setup(
         workspace,
         broker=broker,
+        account_source=source,
         data_provider="upstox" if provider == "upstox" else None,
         instruments=ask("Watchlist, comma separated (e.g. NSE:INFY,NSE:RELIANCE): "),
         capital=ask("Starting paper capital in INR: "),
@@ -163,7 +180,7 @@ def check(name, state, detail, action=None, **extra):
     return dict(name=name, state=state, detail=detail, next_action=action, **extra)
 
 
-def doctor(workspace, now=None, online=False, client=None):
+def doctor(workspace, now=None, online=False, client=None, account_client=None):
     now = now or datetime.now(IST)
     checks = []
     if not (workspace / "config.json").exists():
@@ -227,6 +244,38 @@ def doctor(workspace, now=None, online=False, client=None):
                     "Unlock Keychain or use environment credentials",
                 )
             )
+    separate_account = provider != broker and config.get("account_source") == "BROKER"
+    if separate_account and not demo:
+        try:
+            values = credentials(broker, workspace, settings.get("credential_store") == "keychain")
+            checks.append(
+                check(
+                    "account_credentials",
+                    "AVAILABLE" if all(values.values()) else "MISSING",
+                    "Execution-account credentials are separate from the market-data token",
+                    "Connect %s locally with auth; no market-data subscription is inferred"
+                    % broker,
+                )
+            )
+            if online:
+                account_client = account_client or broker_client(workspace, broker)
+                account_client.profile()
+                checks.append(
+                    check(
+                        "account_login",
+                        "AVAILABLE",
+                        "Execution-broker profile authenticated; complete exposure remains checked by sync",
+                    )
+                )
+        except (ValueError, KeyError, OSError) as error:
+            checks.append(
+                check(
+                    "account_login",
+                    getattr(error, "state", "ERROR"),
+                    str(error),
+                    "Reconnect the execution broker locally; manual exposure is not substituted",
+                )
+            )
     calendar = read(workspace / "calendar.json") if (workspace / "calendar.json").exists() else {}
     instruments = (
         read(workspace / "instruments.json") if (workspace / "instruments.json").exists() else {}
@@ -266,7 +315,7 @@ def doctor(workspace, now=None, online=False, client=None):
                 check(
                     "login",
                     "AVAILABLE" if provider != "upstox" else "DATA_ONLY",
-                    "Quote authentication checked below; execution-broker account is not connected"
+                    "Quote authentication checked below; this token has market-data scope only"
                     if provider == "upstox"
                     else "Read-only profile authenticated",
                     capabilities=result,
@@ -521,7 +570,7 @@ def doctor(workspace, now=None, online=False, client=None):
                 None
                 if fresh
                 else "Confirm cash, holdings, positions and pending orders in Settings"
-                if provider == "upstox"
+                if provider == "upstox" and config.get("account_source") == "MANUAL_ATTESTATION"
                 else "Run sync",
             )
         )
@@ -555,7 +604,15 @@ def doctor(workspace, now=None, online=False, client=None):
     }
 
 
-def sync(workspace, now, client=None, master_file=None, quotes_only=False, history_days=30):
+def sync(
+    workspace,
+    now,
+    client=None,
+    master_file=None,
+    quotes_only=False,
+    history_days=30,
+    account_client=None,
+):
     if not 1 <= history_days <= 365:
         raise ValueError("History days must be between 1 and 365")
     config = read(workspace / "config.json")
@@ -599,6 +656,8 @@ def sync(workspace, now, client=None, master_file=None, quotes_only=False, histo
             name: instrument_on(instruments, name, now.date(), strict=True)
             for name in config["watchlist"]
         }
+    manual_account = provider == "upstox" and config.get("account_source") == "MANUAL_ATTESTATION"
+    if manual_account:
         results.append(
             {
                 "capability": "account",
@@ -608,10 +667,17 @@ def sync(workspace, now, client=None, master_file=None, quotes_only=False, histo
         )
     else:
         try:
-            snapshot = client.account_snapshot(instruments, now)
+            source = account_client or (
+                broker_client(workspace, broker) if provider != broker else client
+            )
+            snapshot = source.account_snapshot(instruments, now)
+            if snapshot.get("status") != "AVAILABLE" or snapshot.get("broker") != broker:
+                raise ValueError(
+                    "Execution-account snapshot is incomplete or belongs to the wrong broker"
+                )
             write(workspace / "broker-snapshot.json", snapshot)
             results.append({"capability": "account", "state": "AVAILABLE"})
-        except (BrokerError, ValueError, KeyError, OSError) as error:
+        except (BrokerError, ValueError, KeyError, OSError, TypeError, ArithmeticError) as error:
             write(
                 workspace / "broker-snapshot.json",
                 {
@@ -701,7 +767,7 @@ def sync(workspace, now, client=None, master_file=None, quotes_only=False, histo
         if all(
             r["state"] == "AVAILABLE"
             or (
-                provider == "upstox"
+                manual_account
                 and r.get("capability") == "account"
                 and r["state"] == "MANUAL_REQUIRED"
             )
