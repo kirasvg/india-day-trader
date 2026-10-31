@@ -16,10 +16,31 @@ def broker_client(workspace, name=None):
     from .brokers import Broker
 
     settings = read(workspace / "settings.json") if (workspace / "settings.json").exists() else {}
-    name = name or settings.get("broker")
+    name = name or settings.get("data_provider", settings.get("broker"))
     if name not in ENV_NAMES:
         raise ValueError("Choose a broker during setup or specify --broker")
     values = credentials(name, workspace, settings.get("credential_store") == "keychain")
+    if name == "upstox":
+        from datetime import datetime
+
+        from .core import IST
+        from .market import instrument_on
+        from .upstox import Upstox
+
+        raw = (
+            read(workspace / "instruments.json")
+            if (workspace / "instruments.json").exists()
+            else {}
+        )
+        instruments = {}
+        for instrument in raw:
+            try:
+                instruments[instrument] = instrument_on(
+                    raw, instrument, datetime.now(IST).date(), strict=True
+                )
+            except ValueError:
+                continue
+        return Upstox(credentials=values, instruments=instruments)
     return Broker(name, credentials=values)
 
 
@@ -57,9 +78,7 @@ def connect(workspace, broker, flow="token", clear=False, prompt=getpass.getpass
     if clear:
         for name in ENV_NAMES[broker]:
             store.delete(broker, name)
-        if settings.get("broker") == broker:
-            settings.pop("credential_store", None)
-            write(settings_path, settings)
+        # Keep Keychain discovery enabled for other connected providers.
         return {
             "status": "CLEARED",
             "broker": broker,
@@ -78,6 +97,11 @@ def connect(workspace, broker, flow="token", clear=False, prompt=getpass.getpass
             values["access_token"] = exchange_kite(values["api_key"], secret, reply)
         else:
             values["access_token"] = prompt("Existing Kite access token (hidden): ").strip()
+    elif broker == "upstox":
+        if flow != "token":
+            raise ValueError("Upstox uses an Analytics Token; choose --flow token")
+        print("Generate a read-only Analytics Token: https://account.upstox.com/developer/apps")
+        values["access_token"] = prompt("Upstox Analytics Token (hidden): ").strip()
     else:
         if flow != "token":
             raise ValueError(
@@ -91,7 +115,8 @@ def connect(workspace, broker, flow="token", clear=False, prompt=getpass.getpass
         raise ValueError("Empty credential; nothing stored")
     for name, value in values.items():
         store.set(broker, name, value)
-    settings.setdefault("broker", broker)
+    if broker != "upstox":
+        settings.setdefault("broker", broker)
     settings["credential_store"] = "keychain"
     write(settings_path, settings)
     return {

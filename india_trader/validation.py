@@ -18,6 +18,8 @@ def record(store, desk, config, calendar, now, interval, healthy=True, issue=Non
             "date": day,
             "origin": "CONNECTED_OBSERVATION",
             "broker": config.get("broker"),
+            "data_provider": config.get("data_provider", config.get("broker")),
+            "account_source": config.get("account_source", "BROKER"),
             "first_sample": now.isoformat(),
             "samples": 0,
             "maximum_gap_seconds": 0,
@@ -27,6 +29,10 @@ def record(store, desk, config, calendar, now, interval, healthy=True, issue=Non
     )
     if entry["broker"] != config.get("broker"):
         return  # Mixed-provider sessions do not silently combine into one qualified observation.
+    if entry.get("data_provider", entry["broker"]) != config.get(
+        "data_provider", config.get("broker")
+    ) or entry.get("account_source", "BROKER") != config.get("account_source", "BROKER"):
+        entry["configuration_changed"] = True
     if entry.get("last_sample"):
         entry["maximum_gap_seconds"] = max(
             entry["maximum_gap_seconds"], (now - stamp(entry["last_sample"])).total_seconds()

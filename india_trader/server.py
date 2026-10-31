@@ -213,6 +213,8 @@ class Handler(BaseHTTPRequestHandler):
                     result = setup(
                         w,
                         broker=payload.get("broker"),
+                        data_provider=payload.get("data_provider") or None,
+                        account_source=payload.get("account_source") or None,
                         instruments=payload.get("watchlist"),
                         capital=payload.get("capital"),
                         max_loss=payload.get("max_loss"),
@@ -233,6 +235,17 @@ class Handler(BaseHTTPRequestHandler):
                         payload.get("id"),
                         payload.get("reason", ""),
                         payload.get("instrument"),
+                    )
+                    desk.refresh(w, now)
+                elif self.path == "/api/confirm-account":
+                    from .manual import confirm_account
+
+                    result = confirm_account(
+                        w,
+                        payload.get("cash"),
+                        payload.get("exposed", ""),
+                        now,
+                        payload.get("reviewed") is True,
                     )
                     desk.refresh(w, now)
                 elif self.path == "/api/sync":

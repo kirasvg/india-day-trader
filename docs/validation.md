@@ -40,3 +40,22 @@ Browser testing uses local synthetic state and illustrative wizard values. The s
 
 
 Session qualification now requires known candle coverage, full session span, continuous heartbeat, ≥99% healthy market samples, fresh quotes and complete account snapshots, and unchanged watchlist/policy/interval. Tests cover both rejection cases and a complete simulated healthy session passing through the recorder. Such unit-test sessions exist only in disposable test directories and are never installed as actual observations. Cycle and processing p95 latency use nearest-rank summaries.
+
+## Upstox data-only integration
+
+Executed locally on 30 October 2026 for this change:
+
+- Python 3.9.6: **187 tests passed**, including both explicitly enabled loopback HTTP tests.
+- All eleven synthetic CLI workflows passed; no real orders or account connections were used.
+- All eleven portable skill bundles installed into a temporary destination; the broker runner configured Upstox mode outside the source checkout. Updated broker/alerts skill validators passed.
+- Ruff lint/format, engine type checking, JavaScript syntax, notification behavior, workflow lint and offline workflow-security checks passed.
+- The real public Upstox NSE instrument master downloaded and parsed: 2,714 supported normal cash equities; INFY mapped to `NSE_EQ|INE009A01021`, tick ₹0.05; RELIANCE to `NSE_EQ|INE002A01018`, tick ₹0.10. Both supplied an explicit CAS flag. This public-file check required no credentials and is not authenticated quote/history validation.
+
+
+Synthetic adapter and workflow tests cover quote identity/timestamps/depth, paise tick conversion, missing CAS classification, historical/current-day splitting, closed-bar filtering, redacted auth errors, endpoint restrictions, manual exposure preservation and stale/overlap/cash risk checks. They do not prove real-token access, latency, reconnect reliability or Groww account exposure. Live REST polling and optional browser notifications require an awake local machine. Authenticated Upstox validation and 20 actual sessions remain pending. See [connection guide](upstox-free-data.md).
+
+## Combined Upstox feed and Groww account (31 October 2026)
+
+The configured combined mode is covered by synthetic tests for role-separated GET calls, complete/partial account reads, expired and missing account tokens, ISIN exposure matching, independent Keychain clearing, dual-role validation provenance and observation-role changes. Account access under Groww’s advertised ₹0 trial has not been authenticated here; eligibility, duration and renewal terms remain unverified. No real orders are implemented and actual observed sessions remain 0/20. Final software check results are recorded in the pull request.
+
+Local checks for the combined-provider change: **200 tests passed** on Python 3.9.6, including all three enabled loopback HTTP tests. All eleven synthetic workflows and the synthetic evidence tour passed. All eleven portable skills installed; the broker runner configured combined mode outside the checkout, and the two updated skill validators passed. Ruff, engine type checks, JavaScript syntax/notification behavior, actionlint and offline zizmor passed. These results are software checks, not authenticated Groww trial or Upstox account validation.

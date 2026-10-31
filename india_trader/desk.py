@@ -181,7 +181,13 @@ def refresh(workspace, now=None):
                 origin,
                 identity=identity,
             )
-            active_alerts.append({"instrument": instrument, "event": event})
+            active_alerts.append(
+                {
+                    "instrument": instrument,
+                    "event": event,
+                    "plan_entry_time": position["plan"]["entry_time"],
+                }
+            )
     from .context import snapshot as context_snapshot
 
     result = {
@@ -189,6 +195,8 @@ def refresh(workspace, now=None):
         "at": now.isoformat(),
         "origin": origin,
         "broker": config.get("broker", "zerodha"),
+        "data_provider": config.get("data_provider", config.get("broker", "zerodha")),
+        "account_source": config.get("account_source", "BROKER"),
         "paused": paused,
         "watchlist": watch,
         "candidates": store.plans()[:50],

@@ -1,6 +1,6 @@
 # Personal connection guide
 
-The assistant keeps broker facts and paper decisions separate. Use one primary provider per workspace. It fetches account/data through GET endpoints; the explicit Kite login flow alone POSTs to the fixed session-token endpoint. It cannot place, modify or cancel orders.
+The assistant keeps broker facts and paper decisions separate. Use one execution broker per workspace. The optional [Upstox data mode](upstox-free-data.md) supplies market data separately, with either authenticated execution-account reads (`--account-source broker`) or explicit manual declarations. It fetches account/data through GET endpoints; the explicit Kite login flow alone POSTs to the fixed session-token endpoint. It cannot place, modify or cancel orders.
 
 ## First session
 

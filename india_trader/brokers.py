@@ -22,7 +22,7 @@ class _Pacer(TypedDict):
 
 
 _PACERS: Dict[str, _Pacer] = {
-    name: {"lock": threading.Lock(), "last": 0.0} for name in ("groww", "zerodha")
+    name: {"lock": threading.Lock(), "last": 0.0} for name in ("groww", "zerodha", "upstox")
 }
 
 
@@ -39,7 +39,7 @@ class NoRedirect(HTTPRedirectHandler):
 
 class Broker:
     def __init__(self, name, transport=None, credentials=None):
-        if name not in ("groww", "zerodha"):
+        if name not in ("groww", "zerodha", "upstox"):
             raise ValueError("Unknown broker")
         self.name = name
         self.transport = transport or self._get
@@ -61,8 +61,11 @@ class Broker:
         token = values.get("access_token")
         if not token:
             raise BrokerError(
-                "MISSING", "Connect Groww with auth or set GROWW_ACCESS_TOKEN outside chat"
+                "MISSING",
+                "Connect with auth or set the documented access-token environment variable outside chat",
             )
+        if self.name == "upstox":
+            return {"Authorization": "Bearer " + token, "Accept": "application/json"}
         return {
             "X-API-VERSION": "1.0",
             "Authorization": "Bearer " + token,
@@ -71,7 +74,11 @@ class Broker:
 
     def _get(self, path, params=None):
         # Fixed origin and GET only: callers cannot redirect secrets to supplied URLs.
-        base = "https://api.kite.trade" if self.name == "zerodha" else "https://api.groww.in"
+        base = {
+            "zerodha": "https://api.kite.trade",
+            "groww": "https://api.groww.in",
+            "upstox": "https://api.upstox.com",
+        }[self.name]
         url = base + path + ("?" + urlencode(params, doseq=True) if params else "")
         request = Request(url, headers=self.headers(), method="GET")
         for attempt in range(3):
@@ -87,13 +94,15 @@ class Broker:
                     self._last_request = pacer["last"]
                 with build_opener(NoRedirect).open(request, timeout=25) as response:
                     body = json.load(response)
-                expected = "success" if self.name == "zerodha" else "SUCCESS"
+                if not isinstance(body, dict):
+                    raise BrokerError("ERROR", "Unexpected broker response shape")
+                expected = "SUCCESS" if self.name == "groww" else "success"
                 if body.get("status") != expected:
                     raise BrokerError(
                         "ERROR",
                         "Broker returned unsuccessful response; inspect your broker dashboard",
                     )
-                return body.get("data" if self.name == "zerodha" else "payload", {})
+                return body.get("payload" if self.name == "groww" else "data", {})
             except HTTPError as exc:
                 if exc.code in (429, 502, 503, 504) and attempt < 2:
                     time.sleep(attempt + 1)
@@ -125,6 +134,8 @@ class Broker:
 
     def profile(self):
         data = self.transport("/user/profile" if self.name == "zerodha" else "/v1/user/detail")
+        if not isinstance(data, dict):
+            raise BrokerError("ERROR", "Unexpected broker profile response shape")
         # Return capabilities, not the customer's name, email or account identifiers.
         return {
             "status": "AVAILABLE",
@@ -195,10 +206,15 @@ class Broker:
                     "ERROR", "Order pagination incomplete; account exposure remains unverified"
                 )
             cash = max(number(0), number(self.transport("/v1/margins/detail/user")["clear_cash"]))
-        if not all(isinstance(v, list) for v in (holdings, positions, orders)):
+        if not all(isinstance(v, list) for v in (holdings, positions, orders)) or any(
+            not isinstance(r, dict) for group in (holdings, positions, orders) for r in group
+        ):
             raise BrokerError(
                 "ERROR", "Unexpected portfolio response shape; refusing an empty-account assumption"
             )
+
+        if any("quantity" not in row for row in holdings + positions):
+            raise BrokerError("ERROR", "Incomplete quantity in account exposure response")
 
         def symbol(row):
             return row.get("tradingsymbol", row.get("trading_symbol"))
@@ -215,7 +231,22 @@ class Broker:
         occupied.update(symbol(r) for r in active_orders)
         if None in occupied:
             raise BrokerError("ERROR", "Unidentified account exposure; inspect broker records")
-        exposed = sorted(k for k in instruments if k.split(":")[1] in occupied)
+        occupied_isins = {
+            r.get("isin") or r.get("symbol_isin")
+            for r in holdings + positions
+            if number(r.get("quantity", 0)) != 0 or number(r.get("t1_quantity", 0)) != 0
+        } - {None}
+        from .market import instrument_on
+
+        exposed = []
+        for instrument in instruments:
+            try:
+                metadata = instrument_on(instruments, instrument, now.date())
+            except ValueError:
+                metadata = {}
+            if instrument.split(":")[1] in occupied or metadata.get("isin") in occupied_isins:
+                exposed.append(instrument)
+        exposed.sort()
         clean_positions = [
             {
                 "instrument": (r.get("exchange", "UNMAPPED") + ":" + symbol(r)),

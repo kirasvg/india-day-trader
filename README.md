@@ -102,6 +102,20 @@ The installer bundles the engine, templates and reference docs into each indepen
 
 For CLI-only installation, `python3 -m pip install .` provides `india-trader`. From a checkout, `python3 -m india_trader` or `python3 scripts/trader.py` works without installation.
 
+## Free data with manual Groww execution
+
+Use Upstox's free read-only Analytics Token for NSE cash-equity quotes and completed five-minute candles while keeping Groww as your manual execution broker. The local collector polls REST data; it is not a tick-streaming service. Select `--account-source broker` to read Groww account exposure with its separate token, or keep explicit manual attestations. Groww’s advertised ₹0 trial account-API eligibility/duration must be checked in your own dashboard; permanent free access is not assumed. No paid Groww API subscription is needed for this mode. See the [setup and limitations](docs/upstox-free-data.md).
+
+```sh
+python3 -m india_trader --workspace "$HOME/india-trader-upstox" setup --broker groww --data-provider upstox --account-source broker --watchlist NSE:INFY --capital 100000 --max-loss 500 --daily-risk 1500
+python3 -m india_trader --workspace "$HOME/india-trader-upstox" auth --broker upstox --flow token
+python3 -m india_trader --workspace "$HOME/india-trader-upstox" auth --broker groww --flow token
+python3 -m india_trader --workspace "$HOME/india-trader-upstox" sync
+python3 -m india_trader --workspace "$HOME/india-trader-upstox" serve --collect
+```
+
+Choose your own limits; the numbers above are examples. Review health and the fresh execution-account snapshot before tracking a paper plan; manual mode instead requires explicit confirmation in Settings. API tokens go only in the hidden local prompt. A real Upstox account and authenticated feed validation are still required.
+
 ## Connect your personal workspace
 
 ```bash
@@ -110,7 +124,7 @@ python3 -m india_trader --workspace trader-real setup --interactive
 python3 -m india_trader --workspace trader-real serve
 ```
 
-Choose Groww or Zerodha, an exchange-qualified watchlist, paper capital, per-trade loss and daily risk. One provider is primary per workspace; a separate workspace keeps a second provider's facts distinct. No credentials are entered into the browser form.
+Choose Groww or Zerodha, an exchange-qualified watchlist, paper capital, per-trade loss and daily risk. One execution broker is primary per workspace; the optional Upstox market-data role is configured separately. Use a separate workspace for a second execution broker. No credentials are entered into the browser form.
 
 Use hidden terminal prompts on macOS to store credentials in this workspace's Keychain scope:
 
